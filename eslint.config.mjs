@@ -21,7 +21,7 @@ const eslintConfig = [
     parser: '@typescript-eslint/parser',
     parserOptions: {
       projectService: {
-        allowDefaultProject: ['*.cjs', '*.mjs'],
+        allowDefaultProject: ['{.,}*.cjs', '{.,}*.mjs'],
       },
     },
   }),

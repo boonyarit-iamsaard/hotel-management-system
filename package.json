@@ -11,6 +11,7 @@
     "format:write": "prettier --write .",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
+    "prepare": "husky || true",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
@@ -28,6 +29,8 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
     "eslint-config-prettier": "^10.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "postcss": "^8",
     "prettier": "^3.5.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
