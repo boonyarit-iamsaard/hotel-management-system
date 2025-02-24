@@ -1,0 +1,26 @@
+services:
+  postgres:
+    container_name: hms-postgres
+    image: postgres:14-alpine
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - hms-network
+    healthcheck:
+      test: pg_isready -U postgres -h localhost
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+    name: hms-pgdata
+
+networks:
+  hms-network:
+    name: hms
