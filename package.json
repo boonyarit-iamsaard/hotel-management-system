@@ -24,8 +24,6 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.37.0",
-    "@oslojs/crypto": "^1.0.1",
-    "@oslojs/encoding": "^1.1.0",
     "@prisma/client": "6.4.1",
     "@radix-ui/react-slot": "^1.1.2",
     "@t3-oss/env-nextjs": "^0.12.0",
