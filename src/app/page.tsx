@@ -1,10 +1,8 @@
 import { Button } from '~/common/components/ui/button';
-import { api } from '~/core/trpc/server';
+import { auth, signIn, signOut } from '~/core/auth/auth';
 
 export default async function Page() {
-  const { status } = await api.healthcheck();
-
-  console.info('status', status);
+  const session = await auth();
 
   return (
     <section className="grid h-[35vh] place-content-center bg-muted">
@@ -12,7 +10,27 @@ export default async function Page() {
         <h1 className="font-bold sm:text-2xl">
           Welcome to Hotel Management System
         </h1>
-        <Button type="button">Get Started</Button>
+        {session ? (
+          <form
+            action={async () => {
+              'use server';
+
+              await signOut();
+            }}
+          >
+            <Button type="submit">Sign Out</Button>
+          </form>
+        ) : (
+          <form
+            action={async () => {
+              'use server';
+
+              await signIn();
+            }}
+          >
+            <Button type="submit">Get Started</Button>
+          </form>
+        )}
       </div>
     </section>
   );

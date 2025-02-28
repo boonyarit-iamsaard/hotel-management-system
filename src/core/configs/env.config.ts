@@ -11,6 +11,8 @@ export const env = createEnv({
     APP_TIMEZONE: z.string(),
     APP_URL: z.string(),
 
+    AUTH_SECRET: z.string(),
+
     DATABASE_TABLE_PREFIX: z
       .string()
       .toLowerCase()
@@ -51,6 +53,8 @@ export const env = createEnv({
     APP_NAME: process.env.APP_NAME,
     APP_TIMEZONE: process.env.APP_TIMEZONE,
     APP_URL: process.env.APP_URL,
+
+    AUTH_SECRET: process.env.AUTH_SECRET,
 
     DATABASE_TABLE_PREFIX: process.env.DATABASE_TABLE_PREFIX,
     DATABASE_URL: process.env.DATABASE_URL,
