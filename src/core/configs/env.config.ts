@@ -11,6 +11,13 @@ export const env = createEnv({
     APP_TIMEZONE: z.string(),
     APP_URL: z.string(),
 
+    DATABASE_TABLE_PREFIX: z
+      .string()
+      .toLowerCase()
+      .regex(
+        /^\S*_$/,
+        'Table prefix must not contain whitespace and end with an underscore (_)',
+      ),
     DATABASE_URL: z.string().url(),
 
     MAIL_HOST: z.string().min(1),
@@ -45,6 +52,7 @@ export const env = createEnv({
     APP_TIMEZONE: process.env.APP_TIMEZONE,
     APP_URL: process.env.APP_URL,
 
+    DATABASE_TABLE_PREFIX: process.env.DATABASE_TABLE_PREFIX,
     DATABASE_URL: process.env.DATABASE_URL,
 
     MAIL_HOST: process.env.MAIL_HOST,
