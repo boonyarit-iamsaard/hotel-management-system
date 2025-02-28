@@ -1,4 +1,5 @@
 import { pgTableCreator, varchar } from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { env } from '~/core/configs/env.config';
 
@@ -16,3 +17,6 @@ export const users = createTable('users', {
   password: varchar('password', { length: 255 }).notNull(),
   image: varchar('image', { length: 255 }),
 });
+
+export const userInsertSchema = createInsertSchema(users);
+export const userSelectSchema = createSelectSchema(users);
