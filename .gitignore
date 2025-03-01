@@ -43,3 +43,6 @@ next-env.d.ts
 
 # seed data
 data/
+
+# editor configuration
+.*rules
