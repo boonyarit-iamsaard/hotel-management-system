@@ -1,3 +1,4 @@
+import { verify } from '@node-rs/argon2';
 import { eq } from 'drizzle-orm';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
@@ -27,16 +28,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         const { success, data } = loginSchema.safeParse(credentials);
         if (!success) {
-          throw new Error('Invalid credentials.');
+          throw new Error('[AUTH] Invalid input format');
         }
 
-        const { email } = data;
+        const { email, password } = data;
         const user = await db
           .select({
             id: users.id,
             name: users.name,
             email: users.email,
             image: users.image,
+            password: users.password,
           })
           .from(users)
           .where(eq(users.email, email))
@@ -44,10 +46,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .then((res) => res[0]);
 
         if (!user) {
-          throw new Error('User not found.');
+          throw new Error('[AUTH] Invalid credentials');
         }
 
-        return user;
+        const isPasswordValid = await verify(password, user.password);
+        if (!isPasswordValid) {
+          throw new Error('[AUTH] Invalid credentials');
+        }
+
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword;
       },
     }),
   ],

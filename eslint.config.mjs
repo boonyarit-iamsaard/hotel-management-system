@@ -40,6 +40,9 @@ const eslintConfig = [
         'warn',
         {
           argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
         },
       ],
       '@typescript-eslint/require-await': 'off',
