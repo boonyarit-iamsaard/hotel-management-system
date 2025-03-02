@@ -2,6 +2,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import { FlatCompat } from '@eslint/eslintrc';
+import stylisticJs from '@stylistic/eslint-plugin-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,6 +27,9 @@ const eslintConfig = [
     },
   }),
   {
+    plugins: {
+      '@stylistic/js': stylisticJs,
+    },
     rules: {
       '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/consistent-type-definitions': 'off',
@@ -53,6 +57,10 @@ const eslintConfig = [
             attributes: false,
           },
         },
+      ],
+      '@stylistic/js/padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: '*', next: 'return' },
       ],
     },
   },

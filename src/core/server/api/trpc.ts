@@ -75,6 +75,7 @@ const getZodError = (error: Error) => {
   if (error.cause instanceof ZodError) {
     return error.cause.flatten();
   }
+
   return null;
 };
 
