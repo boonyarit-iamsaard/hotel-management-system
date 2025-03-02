@@ -7,12 +7,15 @@ import { z } from 'zod';
 import { db } from '~/core/database/client';
 import { users } from '~/core/database/schema';
 
+import authConfig from './auth.config';
+
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -55,6 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const { password: _, ...userWithoutPassword } = user;
+
         return userWithoutPassword;
       },
     }),
