@@ -5,7 +5,7 @@ import { Bed } from 'lucide-react';
 import { LoginForm } from '~/core/auth/components/login-form';
 import { env } from '~/core/configs/env.config';
 
-export default function LoginPage() {
+export default function Page() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="relative hidden bg-muted lg:block"></div>
