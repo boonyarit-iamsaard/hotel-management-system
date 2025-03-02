@@ -5,11 +5,11 @@ import NextAuth from 'next-auth';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JWT } from 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
-import { z } from 'zod';
 
 import { db } from '~/core/database/client';
 
 import authConfig from './auth.config';
+import { loginSchema } from './auth.schema';
 
 declare module 'next-auth' {
   interface User {
@@ -33,11 +33,6 @@ declare module 'next-auth/jwt' {
   }
 }
 
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   session: {
@@ -58,10 +53,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           type: 'password',
         },
       },
+      // TODO: implement error handling
+      // https://authjs.dev/reference/core/errors#credentialssignin
       async authorize(credentials) {
         const { success, data } = loginSchema.safeParse(credentials);
         if (!success) {
-          throw new Error('[AUTH] Invalid input format');
+          return null;
         }
 
         const { email, password } = data;
@@ -72,12 +69,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (!user) {
-          throw new Error('[AUTH] Invalid credentials');
+          return null;
         }
 
         const isPasswordValid = await verify(user.password, password);
         if (!isPasswordValid) {
-          throw new Error('[AUTH] Invalid credentials');
+          return null;
         }
 
         const { password: _, ...userWithoutPassword } = user;

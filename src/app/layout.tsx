@@ -2,8 +2,11 @@ import '~/common/styles/globals.css';
 
 import type { Metadata } from 'next';
 
+import { Toaster } from '~/common/components/ui/sonner';
 import { cn } from '~/common/helpers/cn';
 import { fontSans } from '~/common/styles/fonts';
+import { NextAuthProvider } from '~/core/auth/providers/next-auth-provider';
+import { TRPCReactProvider } from '~/core/trpc/react';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,9 +23,14 @@ export default function RootLayout({
       <body
         className={cn('min-h-svh font-sans antialiased', fontSans.variable)}
       >
-        <div className="relative flex min-h-svh flex-col">
-          <main className="flex-1">{children}</main>
-        </div>
+        <TRPCReactProvider>
+          <NextAuthProvider>
+            <div className="relative flex min-h-screen flex-col bg-background">
+              {children}
+            </div>
+          </NextAuthProvider>
+        </TRPCReactProvider>
+        <Toaster />
       </body>
     </html>
   );
