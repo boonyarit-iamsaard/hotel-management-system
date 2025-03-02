@@ -1,15 +1,23 @@
 import { hash } from '@node-rs/argon2';
+import { Role, type PrismaClient } from '@prisma/client';
+import { z } from 'zod';
 
-import type { DrizzleClient } from '../client';
 import { parseSeedData } from '../helpers';
-import { userInsertSchema, users } from '../schema';
 
-export async function usersSeeder(db: DrizzleClient) {
+const createUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+  name: z.string(),
+  image: z.string().nullish(),
+  role: z.nativeEnum(Role),
+});
+
+export async function usersSeeder(db: PrismaClient) {
   console.info('[SEEDER] 🌱 Starting users seed');
 
-  await db.delete(users);
+  await db.user.deleteMany();
 
-  const usersData = parseSeedData('users.json', userInsertSchema);
+  const usersData = parseSeedData('users.json', createUserSchema);
   if (!usersData) {
     console.info('[SEEDER] ⏭️ Skipping users seed');
 
@@ -32,7 +40,9 @@ export async function usersSeeder(db: DrizzleClient) {
     })),
   );
 
-  await db.insert(users).values(usersWithHashedPassword);
+  await db.user.createMany({
+    data: usersWithHashedPassword,
+  });
 
   console.info('[SEEDER] ✅ Users seed completed');
 }

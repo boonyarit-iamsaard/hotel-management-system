@@ -6,36 +6,22 @@ async function main() {
 
   const seeders = [usersSeeder];
 
-  try {
-    for (const seeder of seeders) {
-      await seeder(db);
-    }
+  for (const seeder of seeders) {
+    await seeder(db);
+  }
+}
 
+main()
+  .then(async () => {
     console.info('[SEEDER] ✅ Database seed completed');
-  } catch (error) {
+
+    await db.$disconnect();
+  })
+  .catch(async (error) => {
     console.error(
       '[SEEDER] ❌ Error during database seed:',
       error instanceof Error ? error.message : JSON.stringify(error),
     );
 
     process.exit(1);
-  } finally {
-    try {
-      await db.$client.end();
-    } catch (err) {
-      console.error(
-        '[SEEDER] ❌ Error closing database connection:',
-        err instanceof Error ? err.message : JSON.stringify(err),
-      );
-    }
-  }
-}
-
-main().catch((error) => {
-  console.error(
-    '[SEEDER] ❌ Error during database seed:',
-    error instanceof Error ? error.message : JSON.stringify(error),
-  );
-
-  process.exit(1);
-});
+  });

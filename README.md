@@ -21,7 +21,7 @@ A mirror version of a custom-built solution developed for a local hotel client. 
 
   - tRPC for type-safe API
   - NextAuth.js for authentication
-  - Drizzle ORM with PostgreSQL
+  - Prisma ORM with PostgreSQL
   - Zod for validation
 
 - **Development**:
@@ -90,6 +90,8 @@ src/
 
 Comprehensive documentation is available in the [docs](./docs) directory:
 
+- [Architecture](./docs/architecture)
+  - [Database Management with Prisma](./docs/architecture/database-prisma.md)
 - [Project Standards](./docs/standards)
   - [Error Message Standards](./docs/standards/error-messages.md)
   - [Logging Conventions](./docs/standards/logging.md)

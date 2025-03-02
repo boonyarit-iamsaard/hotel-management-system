@@ -65,10 +65,11 @@ This document outlines the naming conventions used throughout the Hotel Manageme
 
 ### Database Schema
 
-- Use camelCase for table names in code (e.g., `users` not `user`)
-- Use snake_case for actual database table and column names
-- Use plural form for table names (e.g., `users` not `user`)
-- Prefix database table names with the configured prefix in environment variables (e.g., `${env.DATABASE_TABLE_PREFIX}users`)
+- Use PascalCase for model names in Prisma schema (e.g., `User` not `user`)
+- Use camelCase for field names in Prisma schema
+- Use snake_case for actual database table and column names with `@map` and `@@map` directives
+- Use singular form for model names (e.g., `User` not `Users`)
+- Use plural form for table names in the database (e.g., `@@map(name: "users")`)
 
 ### CSS and Styling
 

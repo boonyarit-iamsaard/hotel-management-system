@@ -2,9 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import type { PrismaClient } from '@prisma/client';
 import type { z } from 'zod';
-
-import type { DrizzleClient } from './client';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -14,7 +13,7 @@ export type SeederOptions = {
 } & Record<string, unknown>;
 
 export type SeederFunction = (
-  db: DrizzleClient,
+  db: PrismaClient,
   options?: SeederOptions,
 ) => Promise<void>;
 

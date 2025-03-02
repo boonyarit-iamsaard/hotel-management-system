@@ -7,6 +7,8 @@ This directory contains various guides, standards, and documentation for the pro
 ```shell
 docs/
 ├── README.md                     # This file
+├── architecture/                 # System design documentation
+│   └── database-prisma.md        # Database management with Prisma
 └── standards/                    # Coding and project standards
     ├── error-messages.md         # Error message style guide
     ├── logging.md                # Logging message style guide
@@ -23,14 +25,14 @@ docs/
 ## Documentation Types
 
 1. **Standards**: Formal rules and conventions that should be followed throughout the project
+2. **Architecture**: System design documentation and decision records
 
 ## Future Documentation
 
 As the project grows, we plan to add:
 
 1. **Guides**: Step-by-step instructions for common tasks
-2. **Architecture**: System design documentation and decision records
-3. **API**: API documentation and examples
+2. **API**: API documentation and examples
 
 ## Contributing
 

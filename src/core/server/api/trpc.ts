@@ -1,8 +1,8 @@
+import type { PrismaClient } from '@prisma/client';
 import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
-import type { DrizzleClient } from '~/core/database/client';
 import { db } from '~/core/database/client';
 
 /**
@@ -10,7 +10,7 @@ import { db } from '~/core/database/client';
  *
  * This section defines the "services" that are available in the backend API.
  */
-export function createServiceContext(_: DrizzleClient) {
+export function createServiceContext(_: PrismaClient) {
   /**
    * Repositories
    */

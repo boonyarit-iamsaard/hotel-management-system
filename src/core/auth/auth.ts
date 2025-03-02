@@ -1,5 +1,5 @@
 import { verify } from '@node-rs/argon2';
-import { eq } from 'drizzle-orm';
+import type { Role } from '@prisma/client';
 import type { DefaultSession } from 'next-auth';
 import NextAuth from 'next-auth';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -8,8 +8,6 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 
 import { db } from '~/core/database/client';
-import type { Role } from '~/core/database/schema';
-import { users } from '~/core/database/schema';
 
 import authConfig from './auth.config';
 
@@ -64,19 +62,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const { email, password } = data;
-        const user = await db
-          .select({
-            id: users.id,
-            email: users.email,
-            password: users.password,
-            name: users.name,
-            image: users.image,
-            role: users.role,
-          })
-          .from(users)
-          .where(eq(users.email, email))
-          .limit(1)
-          .then((res) => res[0]);
+        const user = await db.user.findUnique({
+          where: {
+            email,
+          },
+        });
 
         if (!user) {
           throw new Error('[AUTH] Invalid credentials');
