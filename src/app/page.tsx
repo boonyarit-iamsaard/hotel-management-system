@@ -1,5 +1,7 @@
+import Link from 'next/link';
+
 import { Button } from '~/common/components/ui/button';
-import { auth, signIn, signOut } from '~/core/auth/auth';
+import { auth, signOut } from '~/core/auth/auth';
 import { env } from '~/core/configs/env.config';
 
 export default async function Page() {
@@ -22,15 +24,9 @@ export default async function Page() {
             <Button type="submit">Sign Out</Button>
           </form>
         ) : (
-          <form
-            action={async () => {
-              'use server';
-
-              await signIn();
-            }}
-          >
-            <Button type="submit">Get Started</Button>
-          </form>
+          <Button asChild type="submit">
+            <Link href="/login">Get Started</Link>
+          </Button>
         )}
       </div>
     </section>
