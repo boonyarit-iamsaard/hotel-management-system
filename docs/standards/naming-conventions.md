@@ -151,6 +151,7 @@ Proper grammar usage in naming improves code readability and maintains consisten
 
 ### Grammar Examples
 
+<!-- prettier-ignore -->
 ```typescript
 // Good grammar in naming - functional approach
 const userData = {
@@ -185,6 +186,7 @@ function UserProfile({ user, onUserUpdate }: UserProfileProps) {
 
 ### Good Examples
 
+<!-- prettier-ignore -->
 ```typescript
 // Variable naming
 const userData = { name: 'John', email: 'john@example.com' };
@@ -220,6 +222,7 @@ function UserProfileCard({ user, isEditable }: UserProfileCardProps) {
 
 ### Bad Examples
 
+<!-- prettier-ignore -->
 ```typescript
 // Avoid these patterns
 
