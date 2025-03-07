@@ -46,3 +46,4 @@ data/
 
 # editor configuration
 .*rules
+.idea

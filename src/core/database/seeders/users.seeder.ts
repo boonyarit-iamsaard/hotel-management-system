@@ -1,6 +1,7 @@
-import { hash } from '@node-rs/argon2';
 import { Role, type PrismaClient } from '@prisma/client';
 import { z } from 'zod';
+
+import { auth } from '~/core/auth/auth.config';
 
 import { parseSeedData } from '../helpers';
 
@@ -25,24 +26,21 @@ export async function usersSeeder(db: PrismaClient) {
   }
 
   const usersSeedData = Array.isArray(usersData) ? usersData : [usersData];
-  const filteredUserData = usersSeedData.filter(
-    (user): user is NonNullable<typeof user> => user !== undefined,
-  );
-  const usersWithHashedPassword = await Promise.all(
-    filteredUserData.map(async (user) => ({
-      ...user,
-      password: await hash(user.password, {
-        memoryCost: 19456,
-        timeCost: 2,
-        outputLen: 32,
-        parallelism: 1,
-      }),
-    })),
-  );
+  for (const user of usersSeedData) {
+    if (!user) {
+      continue;
+    }
 
-  await db.user.createMany({
-    data: usersWithHashedPassword,
-  });
+    await auth.api.signUpEmail({
+      body: {
+        email: user.email,
+        password: user.password,
+        name: user.name,
+        image: user.image,
+        role: user.role,
+      },
+    });
+  }
 
   console.info('[SEEDER] ✅ Users seed completed');
 }

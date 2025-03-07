@@ -1,11 +1,14 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
 
 import { Button } from '~/common/components/ui/button';
-import { auth, signOut } from '~/core/auth/auth';
+import { auth } from '~/core/auth/auth.config';
 import { env } from '~/core/configs/env.config';
 
 export default async function Page() {
-  const session = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   return (
     <section className="grid h-[35vh] place-content-center bg-muted">
@@ -18,7 +21,9 @@ export default async function Page() {
             action={async () => {
               'use server';
 
-              await signOut();
+              await auth.api.signOut({
+                headers: await headers(),
+              });
             }}
           >
             <Button type="submit">Sign Out</Button>

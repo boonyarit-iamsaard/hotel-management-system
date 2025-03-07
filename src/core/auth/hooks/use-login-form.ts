@@ -4,11 +4,11 @@ import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { z } from 'zod';
 
+import { authClient } from '../auth.client';
 import { loginSchema } from '../auth.schema';
 
 export function useLoginForm() {
@@ -32,33 +32,21 @@ export function useLoginForm() {
   }
 
   async function handleSubmit(values: z.infer<typeof loginSchema>) {
-    try {
-      const response = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
+    const { error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+    });
 
-      if (response?.error === 'CredentialsSignin') {
-        toast.error('Unable to login', {
-          description: 'Please check your email and password',
-        });
-
-        return;
-      }
-
-      if (response?.error) {
-        throw new Error(response.error);
-      }
-
-      router.replace('/');
-    } catch (e) {
+    if (error) {
+      console.error(error);
       toast.error('Unable to login', {
-        description: 'Please try again later',
+        description: 'Please check your email and password',
       });
 
-      console.error(e);
+      return;
     }
+
+    router.replace('/');
   }
 
   return {

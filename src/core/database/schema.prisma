@@ -21,14 +21,60 @@ enum Role {
 }
 
 model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?
+  role          Role      @default(GUEST)
+  sessions      Session[]
+  accounts      Account[]
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map(name: "users")
+}
+
+model Session {
   id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
-  image     String?
-  role      Role     @default(GUEST)
+  userId    String   @map("user_id")
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map(name: "users")
+  @@map(name: "sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  userId                String    @map("user_id")
+  User                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?   @map("scope")
+  idToken               String?   @map("id_token")
+  password              String?   @map("password")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@map(name: "accounts")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String   @map("identifier")
+  value      String   @map("value")
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map(name: "verifications")
 }

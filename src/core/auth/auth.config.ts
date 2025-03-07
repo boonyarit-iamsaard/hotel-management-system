@@ -1,5 +1,30 @@
-import type { NextAuthConfig } from 'next-auth';
+import { Role } from '@prisma/client';
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { nextCookies } from 'better-auth/next-js';
 
-export default {
-  providers: [],
-} satisfies NextAuthConfig;
+import { db } from '~/core/database/client';
+
+export const auth = betterAuth({
+  database: prismaAdapter(db, {
+    provider: 'postgresql',
+  }),
+  emailAndPassword: {
+    enabled: true,
+    /**
+     * Disable auto sign-in since users're signed up manually by administrator
+     */
+    autoSignIn: false,
+  },
+  plugins: [nextCookies()],
+  user: {
+    additionalFields: {
+      role: {
+        type: 'string',
+        enum: Role,
+        required: true,
+        defaultValue: Role.GUEST,
+      },
+    },
+  },
+});

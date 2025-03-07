@@ -20,7 +20,7 @@ A mirror version of a custom-built solution developed for a local hotel client. 
 - **Backend**:
 
   - tRPC for type-safe API
-  - NextAuth.js for authentication
+  - better-auth for authentication
   - Prisma ORM with PostgreSQL
   - Zod for validation
 
