@@ -1,8 +1,5 @@
-import {
-  createCallerFactory,
-  createTRPCRouter,
-  publicProcedure,
-} from '~/core/server/api/trpc';
+import { createCallerFactory, createTRPCRouter } from '~/core/server/api/trpc';
+import { roomTypesRouter } from '~/features/room-types/room-types.router';
 
 /**
  * This is the primary router for your server.
@@ -10,11 +7,7 @@ import {
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  healthcheck: publicProcedure.query(() => {
-    return {
-      status: 'ok',
-    };
-  }),
+  roomTypes: roomTypesRouter,
 });
 
 // export type definition of API

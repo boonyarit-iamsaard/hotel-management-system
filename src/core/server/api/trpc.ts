@@ -4,16 +4,19 @@ import superjson from 'superjson';
 import { ZodError } from 'zod';
 
 import { db } from '~/core/database/database.client';
+import { createRoomTypesRepository } from '~/features/room-types/room-types.repository';
+import { createRoomTypeService } from '~/features/room-types/room-types.service';
 
 /**
  * 0. SERVICES CONTEXT
  *
  * This section defines the "services" that are available in the backend API.
  */
-export function createServiceContext(_: PrismaClient) {
+export function createServiceContext(db: PrismaClient) {
   /**
    * Repositories
    */
+  const roomTypesRepository = createRoomTypesRepository(db);
 
   /**
    * Standalone services
@@ -24,6 +27,7 @@ export function createServiceContext(_: PrismaClient) {
    * Repository-dependent services
    * These services only depend on their respective repositories
    */
+  const roomTypesService = createRoomTypeService(roomTypesRepository);
 
   /**
    * Composite services with repository
@@ -36,7 +40,7 @@ export function createServiceContext(_: PrismaClient) {
    */
 
   return {
-    //
+    roomTypesService,
   };
 }
 

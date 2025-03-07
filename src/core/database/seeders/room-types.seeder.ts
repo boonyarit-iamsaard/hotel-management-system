@@ -1,4 +1,5 @@
 import { RoomPriceType, type PrismaClient } from '@prisma/client';
+import { startOfDay } from 'date-fns';
 import { z } from 'zod';
 
 import { parseSeedData } from '../database.helper';
@@ -51,7 +52,7 @@ export async function roomTypesSeeder(db: PrismaClient) {
               priceType: RoomPriceType.STANDARD,
               weekday: roomType.price.weekday,
               weekend: roomType.price.weekend,
-              effectiveFrom: new Date(),
+              effectiveFrom: startOfDay(new Date()),
             },
           ],
         },

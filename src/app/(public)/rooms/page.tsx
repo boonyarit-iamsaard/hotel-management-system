@@ -4,6 +4,7 @@ import { ImageIcon } from 'lucide-react';
 
 import { PageHeader } from '~/common/components/page-header';
 import { Button } from '~/common/components/ui/button';
+import { api } from '~/core/trpc/server';
 
 type Room = {
   id: string;
@@ -23,6 +24,9 @@ const rooms: Room[] = Array.from({ length: 6 }, (_, index) => ({
 }));
 
 export default async function Page() {
+  const roomTypes = await api.roomTypes.getRoomTypes();
+  console.log('room types', JSON.stringify(roomTypes, null, 2));
+
   return (
     <div className="space-y-12">
       <PageHeader title="Our Rooms" />
