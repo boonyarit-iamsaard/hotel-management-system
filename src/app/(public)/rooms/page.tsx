@@ -1,78 +1,195 @@
 import Link from 'next/link';
 
+import type { RoomPrice, RoomType } from '@prisma/client';
 import { ImageIcon } from 'lucide-react';
 
 import { PageHeader } from '~/common/components/page-header';
 import { Button } from '~/common/components/ui/button';
 import { api } from '~/core/trpc/server';
 
-type Room = {
-  id: string;
-  name: string;
-  description: string;
-  weekdayRate: number;
-  weekendRate: number;
-  imageUrl?: string;
+type RoomTypeWithPrices = RoomType & {
+  prices: RoomPrice[];
+  _count: {
+    rooms: number;
+  };
 };
 
-const rooms: Room[] = Array.from({ length: 6 }, (_, index) => ({
-  id: `room-${index + 1}`,
-  name: `Room ${index + 1} Garden View`,
-  description: `A ${index % 2 === 0 ? 'comfortable' : 'delightful'} room with charming garden views. This room combines modern amenities with a cozy atmosphere, making it perfect for a peaceful stay.`,
-  weekdayRate: 1900 + index * 200,
-  weekendRate: 2400 + index * 200,
-}));
+type ProcessedRoomType = {
+  id: string;
+  name: string;
+  description: string | null;
+  standardPrice: RoomPrice;
+  promotionalPrice: RoomPrice | null;
+  weekdaySavings: number;
+  weekendSavings: number;
+  displayPrice: number;
+  roomCount: number;
+};
+
+function formatPrice(subunits: number): string {
+  return (subunits / 100).toLocaleString();
+}
+
+function calculateSavings(original: number, discounted: number): number {
+  return Math.round(((original - discounted) / original) * 100);
+}
+
+function processRoomType(
+  roomType: RoomTypeWithPrices,
+): ProcessedRoomType | null {
+  const standardPrice = roomType.prices.find(
+    (price) => price.priceType === 'STANDARD',
+  );
+  const promotionalPrice =
+    roomType.prices.find((price) => price.priceType === 'PROMOTION') ?? null;
+
+  if (!standardPrice) {
+    return null;
+  }
+
+  const weekdaySavings = promotionalPrice
+    ? calculateSavings(standardPrice.weekday, promotionalPrice.weekday)
+    : 0;
+  const weekendSavings = promotionalPrice
+    ? calculateSavings(standardPrice.weekend, promotionalPrice.weekend)
+    : 0;
+
+  return {
+    id: roomType.id,
+    name: roomType.name,
+    description: roomType.description,
+    standardPrice,
+    promotionalPrice,
+    weekdaySavings,
+    weekendSavings,
+    displayPrice: promotionalPrice?.weekday ?? standardPrice.weekday,
+    roomCount: roomType._count.rooms,
+  };
+}
 
 export default async function Page() {
   const roomTypes = await api.roomTypes.getRoomTypes();
-  console.log('room types', JSON.stringify(roomTypes, null, 2));
+  const processedRoomTypes = roomTypes
+    .map(processRoomType)
+    .filter((room): room is ProcessedRoomType => room !== null)
+    .sort((a, b) => a.displayPrice - b.displayPrice);
 
   return (
-    <div className="space-y-12">
+    <>
       <PageHeader title="Our Rooms" />
-      <div className="container space-y-6">
-        {rooms.map((room) => (
-          <div
-            key={room.id}
-            className="grid grid-rows-[auto_1fr] overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-[1fr_2fr]"
-          >
-            <div className="flex aspect-square items-center justify-center bg-muted sm:aspect-auto">
-              <ImageIcon className="h-12 w-12 text-muted-foreground" />
-            </div>
-            <div className="flex flex-col justify-between space-y-4 p-6">
-              <div className="space-y-4">
-                <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-2xl font-bold text-foreground">
-                    {room.name}
-                  </h2>
-                </div>
-                <p className="text-muted-foreground">{room.description}</p>
-                <div className="text-right">
-                  <div className="text-sm text-muted-foreground">From</div>
-                  <div className="text-2xl font-bold text-foreground">
-                    {room.weekdayRate.toLocaleString()} THB
+      <div className="space-y-12 py-12">
+        <div className="container space-y-6">
+          {processedRoomTypes.map((roomType) => (
+            <div
+              key={roomType.id}
+              className="grid grid-rows-[auto_1fr] overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-[1fr_2fr]"
+            >
+              <div className="flex aspect-square items-center justify-center bg-muted sm:aspect-auto">
+                <ImageIcon className="h-12 w-12 text-muted-foreground" />
+              </div>
+              <div className="flex flex-col justify-between space-y-4 p-6">
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <h2 className="text-2xl font-bold text-foreground">
+                      {roomType.name}
+                    </h2>
+                    <div className="text-sm text-muted-foreground">
+                      {roomType.roomCount} rooms available
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">per night</div>
-                </div>
-                <div className="space-y-1 text-right text-sm text-muted-foreground">
-                  <p>
-                    • Weekday rates from {room.weekdayRate.toLocaleString()} THB
+                  <p className="text-muted-foreground">
+                    {roomType.description}
                   </p>
-                  <p>
-                    • Weekend rates from {room.weekendRate.toLocaleString()} THB
-                  </p>
-                  <p>* Member discounts up to 30% available</p>
+                  <div className="text-right">
+                    <div className="text-sm text-muted-foreground">From</div>
+                    <div className="space-y-1">
+                      {roomType.promotionalPrice ? (
+                        <>
+                          <div className="text-2xl font-bold text-foreground">
+                            {formatPrice(roomType.promotionalPrice.weekday)} THB
+                          </div>
+                          <div className="text-sm text-muted-foreground line-through">
+                            {formatPrice(roomType.standardPrice.weekday)} THB
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-2xl font-bold text-foreground">
+                          {formatPrice(roomType.standardPrice.weekday)} THB
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      per night
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-right text-sm">
+                    <p className="text-muted-foreground">
+                      • Weekday rates from{' '}
+                      {roomType.promotionalPrice ? (
+                        <span>
+                          <span className="font-medium text-foreground">
+                            {formatPrice(roomType.promotionalPrice.weekday)} THB
+                          </span>{' '}
+                          <span className="line-through">
+                            {formatPrice(roomType.standardPrice.weekday)} THB
+                          </span>{' '}
+                          <span className="text-green-600">
+                            Save {roomType.weekdaySavings}%
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="font-medium text-foreground">
+                          {formatPrice(roomType.standardPrice.weekday)} THB
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-muted-foreground">
+                      • Weekend rates from{' '}
+                      {roomType.promotionalPrice ? (
+                        <span>
+                          <span className="font-medium text-foreground">
+                            {formatPrice(roomType.promotionalPrice.weekend)} THB
+                          </span>{' '}
+                          <span className="line-through">
+                            {formatPrice(roomType.standardPrice.weekend)} THB
+                          </span>{' '}
+                          <span className="text-green-600">
+                            Save {roomType.weekendSavings}%
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="font-medium text-foreground">
+                          {formatPrice(roomType.standardPrice.weekend)} THB
+                        </span>
+                      )}
+                    </p>
+                    {roomType.promotionalPrice?.promotionName && (
+                      <p className="font-medium text-green-600">
+                        {roomType.promotionalPrice.promotionName}
+                      </p>
+                    )}
+                    <p className="text-muted-foreground">
+                      * Member discounts up to 30% available
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-end">
-                <Button asChild variant="outline" size="lg">
-                  <Link href={`/rooms/${room.id}`}>Select dates</Link>
-                </Button>
+                <div className="flex justify-end">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    disabled={roomType.roomCount === 0}
+                  >
+                    <Link href={`/rooms/${roomType.id}`}>
+                      {roomType.roomCount > 0 ? 'Select dates' : 'Fully booked'}
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
