@@ -23,7 +23,7 @@
   },
   "prisma": {
     "schema": "src/core/database/schema.prisma",
-    "seed": "dotenvx run -- tsx src/core/database/seed.ts"
+    "seed": "dotenvx run -- tsx src/core/database/database.seeder.ts"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.37.0",

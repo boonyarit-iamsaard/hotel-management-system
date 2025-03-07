@@ -3,7 +3,7 @@ import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
-import { db } from '~/core/database/client';
+import { db } from '~/core/database/database.client';
 
 /**
  * 0. SERVICES CONTEXT

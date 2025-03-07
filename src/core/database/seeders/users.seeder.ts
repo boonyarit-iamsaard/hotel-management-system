@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { auth } from '~/core/auth/auth.config';
 
-import { parseSeedData } from '../helpers';
+import { parseSeedData } from '../database.helper';
 
 const createUserSchema = z.object({
   email: z.string().email(),

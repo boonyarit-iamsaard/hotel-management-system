@@ -1,4 +1,4 @@
-import { db } from './client';
+import { db } from './database.client';
 import { usersSeeder } from './seeders/users.seeder';
 
 async function main() {
