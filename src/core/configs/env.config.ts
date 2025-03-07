@@ -1,6 +1,13 @@
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
+export enum DatabaseLogLevel {
+  INFO = 'info',
+  QUERY = 'query',
+  ERROR = 'error',
+  WARN = 'warn',
+}
+
 export const env = createEnv({
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
@@ -14,6 +21,13 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: z.string(),
     BETTER_AUTH_URL: z.string().url(),
 
+    DATABASE_LOG_LEVELS: z.preprocess(
+      (value) =>
+        typeof value === 'string'
+          ? value.split(',').map((level) => level.trim())
+          : value,
+      z.array(z.nativeEnum(DatabaseLogLevel)).min(1),
+    ),
     DATABASE_URL: z.string().url(),
 
     MAIL_HOST: z.string().min(1),
@@ -51,6 +65,7 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 
+    DATABASE_LOG_LEVELS: process.env.DATABASE_LOG_LEVELS,
     DATABASE_URL: process.env.DATABASE_URL,
 
     MAIL_HOST: process.env.MAIL_HOST,

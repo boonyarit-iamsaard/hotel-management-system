@@ -23,7 +23,7 @@
   },
   "prisma": {
     "schema": "src/core/database/schema.prisma",
-    "seed": "dotenvx run -- tsx src/core/database/database.seeder.ts"
+    "seed": "dotenvx run -f .env --env DATABASE_LOG_LEVELS=\"warn,error\" --overload -- tsx src/core/database/database.seeder.ts"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.37.0",

@@ -13,10 +13,8 @@ const createUserSchema = z.object({
   role: z.nativeEnum(Role),
 });
 
-export async function usersSeeder(db: PrismaClient) {
+export async function usersSeeder(_: PrismaClient) {
   console.info('[SEEDER] 🌱 Starting users seed');
-
-  await db.user.deleteMany();
 
   const usersData = parseSeedData('users.json', createUserSchema);
   if (!usersData) {
