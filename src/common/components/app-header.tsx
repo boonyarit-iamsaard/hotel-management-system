@@ -17,13 +17,18 @@ export function AppHeader() {
   return (
     <header className="flex h-16 items-center">
       <div className="container flex items-center justify-between">
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-4">
           <Link href="/">
             <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <BedIcon className="size-4" />
               <span className="sr-only">{env.NEXT_PUBLIC_APP_NAME}</span>
             </div>
           </Link>
+          <div className="flex items-center">
+            <Button asChild variant="link">
+              <Link href="/rooms">Our Rooms</Link>
+            </Button>
+          </div>
         </nav>
         <div className="flex items-center gap-2">
           {isPending ? (
