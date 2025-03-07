@@ -20,6 +20,11 @@ enum Role {
   GUEST
 }
 
+enum RoomPriceType {
+  STANDARD
+  PROMOTION
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String
@@ -77,4 +82,44 @@ model Verification {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map(name: "verifications")
+}
+
+model RoomType {
+  id          String      @id @default(uuid())
+  name        String
+  code        String      @unique
+  description String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  rooms       Room[]
+  prices      RoomPrice[]
+
+  @@map(name: "room_types")
+}
+
+model Room {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  roomType   RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  roomTypeId String   @map("room_type_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map(name: "rooms")
+}
+
+model RoomPrice {
+  id            String        @id @default(uuid())
+  weekday       Int
+  weekend       Int
+  priceType     RoomPriceType @map("price_type")
+  promotionName String?       @map("promotion_name")
+  roomType      RoomType      @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  roomTypeId    String        @map("room_type_id")
+  effectiveFrom DateTime      @map("effective_from")
+  effectiveTo   DateTime?     @map("effective_to")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  @@map(name: "room_prices")
 }
