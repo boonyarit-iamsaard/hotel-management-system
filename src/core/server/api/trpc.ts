@@ -1,8 +1,9 @@
 import type { PrismaClient } from '@prisma/client';
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
+import { auth } from '~/core/auth/auth.config';
 import { db } from '~/core/database/client';
 import { createRoomTypesDataAccess } from '~/features/room-types/data-access';
 import { createRoomTypesService } from '~/features/room-types/service';
@@ -60,10 +61,14 @@ export type ServiceContext = ReturnType<typeof createServiceContext>;
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const services = createServiceContext(db);
+  const session = await auth.api.getSession({
+    headers: opts.headers,
+  });
 
   return {
     db,
     services,
+    session,
     ...opts,
   };
 };
@@ -148,3 +153,25 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to logged in users, use this. It verifies
+ * the session is valid and guarantees `ctx.session` is not null.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const protectedProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(({ ctx, next }) => {
+    if (!ctx.session) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    return next({
+      ctx: {
+        session: { ...ctx.session },
+      },
+    });
+  });
