@@ -3,7 +3,7 @@ import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
-import { db } from '~/core/database/database.client';
+import { db } from '~/core/database/client';
 import { createRoomTypesDataAccess } from '~/features/room-types/data-access';
 import { createRoomTypesService } from '~/features/room-types/service';
 

@@ -1,6 +1,6 @@
-import { db } from './database.client';
-import { roomTypesSeeder } from './seeders/room-types.seeder';
-import { usersSeeder } from './seeders/users.seeder';
+import { db } from './client';
+import { roomTypesSeeder } from './seeders/room-types';
+import { usersSeeder } from './seeders/users';
 
 async function main() {
   console.info('[SEEDER] 🌱 Starting database seed');

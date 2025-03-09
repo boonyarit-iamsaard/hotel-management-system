@@ -2,7 +2,7 @@ import { RoomPriceType, type PrismaClient } from '@prisma/client';
 import { startOfDay } from 'date-fns';
 import { z } from 'zod';
 
-import { parseSeedData } from '../database.helper';
+import { parseSeedData } from '../helpers/seed-data';
 
 const roomTypeSeedDataSchema = z.object({
   name: z.string(),

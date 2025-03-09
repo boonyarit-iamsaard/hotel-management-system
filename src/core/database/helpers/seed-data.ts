@@ -20,7 +20,7 @@ export type SeederFunction = (
 export function readSeedData(fileName: string): string | undefined {
   console.info(`[SEEDER] 📄 Reading file ${fileName}`);
 
-  const path = join(__dirname, 'data', fileName);
+  const path = join(__dirname, '..', 'data', fileName);
   if (!existsSync(path)) {
     console.warn(`[SEEDER] 🚫 File not found: ${path}`);
 
