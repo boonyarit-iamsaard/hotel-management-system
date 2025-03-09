@@ -13,6 +13,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+  NO_SHOW
+  ON_HOLD
+  EXPIRED
+}
+
+enum BookingPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  DISPUTED
+  CANCELLED
+}
+
 enum Role {
   OWNER
   ADMINISTRATOR
@@ -34,6 +54,7 @@ model User {
   role          Role      @default(GUEST)
   sessions      Session[]
   accounts      Account[]
+  bookings      Booking[]
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -89,21 +110,23 @@ model RoomType {
   name        String
   code        String      @unique
   description String?
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
   rooms       Room[]
   prices      RoomPrice[]
+  bookings    Booking[]
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
 
   @@map(name: "room_types")
 }
 
 model Room {
-  id         String   @id @default(uuid())
-  name       String   @unique
-  roomType   RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
-  roomTypeId String   @map("room_type_id")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  id         String    @id @default(uuid())
+  name       String    @unique
+  roomType   RoomType  @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  roomTypeId String    @map("room_type_id")
+  bookings   Booking[]
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@map(name: "rooms")
 }
@@ -122,4 +145,34 @@ model RoomPrice {
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
   @@map(name: "room_prices")
+}
+
+model Booking {
+  id                    String               @id @default(uuid())
+  bookingNumber         String               @unique @map("booking_number")
+  checkIn               DateTime             @map("check_in")
+  checkOut              DateTime             @map("check_out")
+  status                BookingStatus        @default(PENDING)
+  paymentStatus         BookingPaymentStatus @default(PENDING) @map("payment_status")
+  userId                String?              @map("user_id")
+  user                  User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestName             String               @map("guest_name")
+  guestEmail            String               @map("guest_email")
+  roomTypeId            String?              @map("room_type_id")
+  roomType              RoomType?            @relation(fields: [roomTypeId], references: [id], onDelete: SetNull)
+  roomTypeName          String               @map("room_type_name")
+  roomId                String?              @map("room_id")
+  room                  Room?                @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  roomName              String               @map("room_name")
+  weekdayCount          Int                  @map("weekday_count")
+  weekendCount          Int                  @map("weekend_count")
+  weekdayPriceAtBooking Int                  @map("weekday_price_at_booking")
+  weekendPriceAtBooking Int                  @map("weekend_price_at_booking")
+  baseAmount            Int                  @map("base_amount")
+  discountAmount        Int                  @map("discount_amount")
+  totalAmount           Int                  @map("total_amount")
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+
+  @@map(name: "bookings")
 }
