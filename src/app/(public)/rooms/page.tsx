@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import type { RoomPrice } from '@prisma/client';
+import { addDays, format, startOfDay } from 'date-fns';
 import { ImageIcon } from 'lucide-react';
 
 import { PageHeader } from '~/common/components/page-header';
@@ -70,6 +71,18 @@ export default async function Page() {
     .map(processRoomType)
     .filter((room): room is ProcessedRoomType => room !== null)
     .sort((a, b) => a.displayPrice - b.displayPrice);
+
+  function getBookingUrl(roomTypeId: string) {
+    const checkIn = format(startOfDay(new Date()), 'yyyy-MM-dd');
+    const checkOut = format(addDays(checkIn, 1), 'yyyy-MM-dd');
+
+    const query = new URLSearchParams();
+    query.set('id', roomTypeId);
+    query.set('check-in', checkIn);
+    query.set('check-out', checkOut);
+
+    return `/bookings/create?${query.toString()}`;
+  }
 
   return (
     <>
@@ -177,8 +190,8 @@ export default async function Page() {
                     size="lg"
                     disabled={roomType.roomCount === 0}
                   >
-                    <Link href={`/rooms/${roomType.id}`}>
-                      {roomType.roomCount > 0 ? 'Select dates' : 'Fully booked'}
+                    <Link href={getBookingUrl(roomType.id)}>
+                      {roomType.roomCount > 0 ? 'Book now' : 'Not available'}
                     </Link>
                   </Button>
                 </div>

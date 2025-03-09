@@ -1,4 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from '~/core/server/api/trpc';
+import { bookingsRouter } from '~/features/bookings/router';
 import { roomTypesRouter } from '~/features/room-types/router';
 
 /**
@@ -8,6 +9,7 @@ import { roomTypesRouter } from '~/features/room-types/router';
  */
 export const appRouter = createTRPCRouter({
   roomTypes: roomTypesRouter,
+  bookings: bookingsRouter,
 });
 
 // export type definition of API
