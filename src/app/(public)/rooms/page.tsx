@@ -1,18 +1,15 @@
 import Link from 'next/link';
 
-import type { RoomPrice, RoomType } from '@prisma/client';
+import type { RoomPrice } from '@prisma/client';
 import { ImageIcon } from 'lucide-react';
 
 import { PageHeader } from '~/common/components/page-header';
 import { Button } from '~/common/components/ui/button';
 import { api } from '~/core/trpc/server';
 
-type RoomTypeWithPrices = RoomType & {
-  prices: RoomPrice[];
-  _count: {
-    rooms: number;
-  };
-};
+type GetRoomTypesResult = Awaited<
+  ReturnType<typeof api.roomTypes.getRoomTypes>
+>;
 
 type ProcessedRoomType = {
   id: string;
@@ -35,7 +32,7 @@ function calculateSavings(original: number, discounted: number): number {
 }
 
 function processRoomType(
-  roomType: RoomTypeWithPrices,
+  roomType: GetRoomTypesResult[number],
 ): ProcessedRoomType | null {
   const standardPrice = roomType.prices.find(
     (price) => price.priceType === 'STANDARD',
@@ -63,7 +60,7 @@ function processRoomType(
     weekdaySavings,
     weekendSavings,
     displayPrice: promotionalPrice?.weekday ?? standardPrice.weekday,
-    roomCount: roomType._count.rooms,
+    roomCount: roomType.rooms.length,
   };
 }
 
