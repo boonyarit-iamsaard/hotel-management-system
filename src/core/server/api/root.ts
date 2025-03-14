@@ -1,6 +1,6 @@
+import { roomTypesRouter } from '~/core/server/api/routers/room-types.router';
 import { createCallerFactory, createTRPCRouter } from '~/core/server/api/trpc';
 import { bookingsRouter } from '~/features/bookings/router';
-import { roomTypesRouter } from '~/features/room-types/router';
 
 /**
  * This is the primary router for your server.
