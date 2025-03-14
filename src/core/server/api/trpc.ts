@@ -1,51 +1,9 @@
-import type { PrismaClient } from '@prisma/client';
 import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
 import { auth } from '~/core/auth/auth.config';
 import { db } from '~/core/database/client';
-import { createRoomTypesDataAccess } from '~/features/room-types/data-access';
-import { createRoomTypesService } from '~/features/room-types/service';
-
-/**
- * 0. SERVICES CONTEXT
- *
- * This section defines the "services" that are available in the backend API.
- */
-export function createServiceContext(db: PrismaClient) {
-  /**
-   * Repositories
-   */
-  const roomTypesDataAccess = createRoomTypesDataAccess(db);
-
-  /**
-   * Standalone services
-   * These services don't depend on repositories or other services
-   */
-
-  /**
-   * Repository-dependent services
-   * These services only depend on their respective repositories
-   */
-  const roomTypesService = createRoomTypesService(roomTypesDataAccess);
-
-  /**
-   * Composite services with repository
-   * These services depend on both repositories and other services
-   */
-
-  /**
-   * Composite services
-   * These services only depend on other services
-   */
-
-  return {
-    roomTypesService,
-  };
-}
-
-export type ServiceContext = ReturnType<typeof createServiceContext>;
 
 /**
  * 1. CONTEXT
@@ -60,14 +18,12 @@ export type ServiceContext = ReturnType<typeof createServiceContext>;
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const services = createServiceContext(db);
   const session = await auth.api.getSession({
     headers: opts.headers,
   });
 
   return {
     db,
-    services,
     session,
     ...opts,
   };
